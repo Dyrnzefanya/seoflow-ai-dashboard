@@ -6,13 +6,14 @@ import { useState, useRef, useEffect } from "react";
 import {
   LayoutDashboard, TrendingUp, Cpu, Lightbulb,
   Search, FileText, Workflow, Settings, Zap, ChevronDown, X, Plus, Layers,
-  PenLine, StickyNote,
+  PenLine, StickyNote, Command,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMobileNav } from "./mobile-nav-context";
 import { useModal } from "@/components/providers/modal-context";
 
 const navItems = [
+  { href: "/command-center",  label: "Command Center",  icon: Command,         badge: null },
   { href: "/dashboard",       label: "Overview",        icon: LayoutDashboard, badge: null },
   { href: "/seo",             label: "SEO Performance", icon: TrendingUp,      badge: null },
   { href: "/ai-visibility",   label: "AI Visibility",   icon: Cpu,             badge: null },
