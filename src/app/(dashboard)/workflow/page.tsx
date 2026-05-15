@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Topbar } from "@/components/layout/topbar";
 import { DashboardShell, GridCols3 } from "@/components/layout/dashboard-shell";
 import { Badge } from "@/components/ui/badge";
@@ -163,9 +164,9 @@ function AddTaskForm({
 
 export default function WorkflowPage() {
   const { toast } = useToast();
-  const [tasks, setTasks] = useState<Task[]>(workflowTasks as Task[]);
+  const [tasks, setTasks] = useLocalStorage<Task[]>("seoflow_tasks_v1", workflowTasks as Task[]);
   const [addingInCol, setAddingInCol] = useState<Status | null>(null);
-  const [goals, setGoals] = useState<Goal[]>(INITIAL_GOALS);
+  const [goals, setGoals] = useLocalStorage<Goal[]>("seoflow_goals_v1", INITIAL_GOALS);
   const [newGoalText, setNewGoalText] = useState("");
   const goalInputRef = useRef<HTMLInputElement>(null);
 

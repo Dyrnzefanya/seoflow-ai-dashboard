@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Topbar } from "@/components/layout/topbar";
 import { DashboardShell, GridCols4 } from "@/components/layout/dashboard-shell";
 import { KpiCard } from "@/components/ui/kpi-card";
@@ -121,7 +122,7 @@ function PositionBadge({ pos }: { pos: number | null }) {
 
 export default function KeywordsPage() {
   const { toast } = useToast();
-  const [keywords, setKeywords] = useState<Keyword[]>(SEED);
+  const [keywords, setKeywords] = useLocalStorage<Keyword[]>("seoflow_keywords_v1", SEED);
   const [filter, setFilter] = useState<"all" | KWStatus>("all");
   const [showForm, setShowForm] = useState(false);
 

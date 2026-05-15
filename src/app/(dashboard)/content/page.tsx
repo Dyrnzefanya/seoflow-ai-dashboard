@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Topbar } from "@/components/layout/topbar";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Badge } from "@/components/ui/badge";
@@ -97,7 +98,7 @@ const STATUS_FILTER_TABS: { id: "all" | ContentStatus; label: string }[] = [
 
 export default function ContentPage() {
   const { toast } = useToast();
-  const [ideas, setIdeas] = useState<ContentIdea[]>(INITIAL_IDEAS);
+  const [ideas, setIdeas] = useLocalStorage<ContentIdea[]>("seoflow_content_ideas_v1", INITIAL_IDEAS);
   const [filter, setFilter] = useState<"all" | ContentStatus>("all");
   const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);

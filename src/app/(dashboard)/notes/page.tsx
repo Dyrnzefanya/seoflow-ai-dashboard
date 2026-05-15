@@ -4,20 +4,20 @@ import { useState, useCallback } from "react";
 import { Topbar } from "@/components/layout/topbar";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { useToast } from "@/components/ui/toast";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { StickyNote, Users, PenLine, Plus, X, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type NoteSection = {
+type SectionMeta = {
   id: string;
   title: string;
   description: string;
   icon: typeof StickyNote;
   iconColor: string;
   iconBg: string;
-  content: string;
 };
 
-const INITIAL_SECTIONS: NoteSection[] = [
+const SECTION_META: SectionMeta[] = [
   {
     id: "strategy",
     title: "Strategy Notes",
@@ -25,7 +25,27 @@ const INITIAL_SECTIONS: NoteSection[] = [
     icon: StickyNote,
     iconColor: "text-emerald-400",
     iconBg: "bg-emerald-500/10 border-emerald-500/20",
-    content: `Q2 2026 SEO Strategy
+  },
+  {
+    id: "competitors",
+    title: "Competitor Notes",
+    description: "Competitor observations, gaps, and positioning analysis",
+    icon: Users,
+    iconColor: "text-blue-400",
+    iconBg: "bg-blue-500/10 border-blue-500/20",
+  },
+  {
+    id: "content",
+    title: "Content Notes",
+    description: "Content pipeline, ideas backlog, and editorial notes",
+    icon: PenLine,
+    iconColor: "text-purple-400",
+    iconBg: "bg-purple-500/10 border-purple-500/20",
+  },
+];
+
+const DEFAULT_CONTENTS: Record<string, string> = {
+  strategy: `Q2 2026 SEO Strategy
 
 Focus areas:
 - Build out the GEO/AEO content cluster (6 articles planned)
@@ -38,15 +58,8 @@ Key objective: Reach 40k organic sessions/month by end of Q2.
 Quick wins this week:
 - Fix meta descriptions on 14 pages (est. +10% CTR)
 - Add FAQ schema to service pages (est. 3× AI citation rate)`,
-  },
-  {
-    id: "competitors",
-    title: "Competitor Notes",
-    description: "Competitor observations, gaps, and positioning analysis",
-    icon: Users,
-    iconColor: "text-blue-400",
-    iconBg: "bg-blue-500/10 border-blue-500/20",
-    content: `Competitor Analysis
+
+  competitors: `Competitor Analysis
 
 Ahrefs
 - Strong brand authority, slow to adapt to AI visibility space
@@ -67,15 +80,8 @@ Our positioning edge:
 → Only platform monitoring AI citation rates across 5 platforms
 → Claude AI-powered recommendations (not generic rule-based)
 → GEO + AEO as first-class features, not afterthoughts`,
-  },
-  {
-    id: "content",
-    title: "Content Notes",
-    description: "Content pipeline, ideas backlog, and editorial notes",
-    icon: PenLine,
-    iconColor: "text-purple-400",
-    iconBg: "bg-purple-500/10 border-purple-500/20",
-    content: `Content Pipeline Notes
+
+  content: `Content Pipeline Notes
 
 Q2 Priorities:
 1. Perplexity SEO cluster (3 articles) — high velocity topic, low competition
@@ -95,8 +101,7 @@ Content gaps spotted (competitor analysis):
 - "what is generative engine optimization" — low KD, high volume
 - "perplexity ai for business" — no strong content yet
 - "AI search ranking factors" — emerging topic, get in early`,
-  },
-];
+};
 
 type QuickNote = {
   id: string;
@@ -112,12 +117,14 @@ const INITIAL_QUICK_NOTES: QuickNote[] = [
 
 function NoteTextarea({
   section,
+  content,
   onBlur,
 }: {
-  section: NoteSection;
+  section: SectionMeta;
+  content: string;
   onBlur: (id: string, value: string) => void;
 }) {
-  const [value, setValue] = useState(section.content);
+  const [value, setValue] = useState(content);
   const [saved, setSaved] = useState(true);
 
   const handleChange = (v: string) => {
@@ -165,14 +172,20 @@ function NoteTextarea({
 
 export default function NotesPage() {
   const { toast } = useToast();
-  const [sections, setSections] = useState<NoteSection[]>(INITIAL_SECTIONS);
-  const [quickNotes, setQuickNotes] = useState<QuickNote[]>(INITIAL_QUICK_NOTES);
+  const [noteContents, setNoteContents, loaded] = useLocalStorage<Record<string, string>>(
+    "seoflow_notes_content_v1",
+    DEFAULT_CONTENTS,
+  );
+  const [quickNotes, setQuickNotes] = useLocalStorage<QuickNote[]>(
+    "seoflow_quick_notes_v1",
+    INITIAL_QUICK_NOTES,
+  );
   const [newNote, setNewNote] = useState("");
 
   const saveSection = useCallback((id: string, content: string) => {
-    setSections((prev) => prev.map((s) => s.id === id ? { ...s, content } : s));
+    setNoteContents((prev) => ({ ...prev, [id]: content }));
     toast("Notes saved.", "info");
-  }, [toast]);
+  }, [setNoteContents, toast]);
 
   const addQuickNote = () => {
     if (!newNote.trim()) return;
@@ -187,7 +200,7 @@ export default function NotesPage() {
     setQuickNotes((prev) => prev.filter((n) => n.id !== id));
   };
 
-  const totalWords = sections.reduce((acc, s) => acc + s.content.split(/\s+/).filter(Boolean).length, 0);
+  const totalWords = Object.values(noteContents).join(" ").split(/\s+/).filter(Boolean).length;
 
   return (
     <>
@@ -251,10 +264,11 @@ export default function NotesPage() {
 
         {/* Section notes */}
         <div className="space-y-4">
-          {sections.map((section) => (
+          {SECTION_META.map((section) => (
             <NoteTextarea
-              key={section.id}
+              key={`${section.id}-${loaded}`}
               section={section}
+              content={noteContents[section.id] ?? DEFAULT_CONTENTS[section.id] ?? ""}
               onBlur={saveSection}
             />
           ))}

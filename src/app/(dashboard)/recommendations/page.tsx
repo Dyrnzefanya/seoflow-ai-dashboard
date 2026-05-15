@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Topbar } from "@/components/layout/topbar";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { Badge } from "@/components/ui/badge";
@@ -50,24 +51,18 @@ type FilterPriority = "all" | "high" | "medium" | "low";
 
 export default function RecommendationsPage() {
   const { toast } = useToast();
-  const [done, setDone] = useState<Set<string>>(new Set());
+  const [doneIds, setDoneIds] = useLocalStorage<string[]>("seoflow_rec_done_v1", []);
   const [filter, setFilter] = useState<FilterPriority>("all");
 
+  const done = new Set(doneIds);
+
   const markDone = (id: string, title: string) => {
-    setDone((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
+    setDoneIds((prev) => [...prev, id]);
     toast(`"${title.slice(0, 48)}${title.length > 48 ? "…" : ""}" marked as done.`);
   };
 
   const undoDone = (id: string) => {
-    setDone((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
+    setDoneIds((prev) => prev.filter((x) => x !== id));
   };
 
   const active = recommendations.filter((r) => !done.has(r.id));
@@ -105,14 +100,14 @@ export default function RecommendationsPage() {
             </button>
           ))}
 
-          {done.size > 0 && (
+          {doneIds.length > 0 && (
             <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 ml-auto">
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="text-xs font-semibold text-emerald-400">{done.size} completed</span>
+              <span className="text-xs font-semibold text-emerald-400">{doneIds.length} completed</span>
             </div>
           )}
 
-          {done.size === 0 && (
+          {doneIds.length === 0 && (
             <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 ml-auto">
               <Zap className="h-3.5 w-3.5 text-emerald-400" />
               <span className="text-xs font-semibold text-emerald-400">Est. impact: +34% visibility</span>
@@ -192,16 +187,16 @@ export default function RecommendationsPage() {
         ) : (
           <EmptyState
             icon={<Lightbulb className="h-8 w-8 text-[#415a72]" />}
-            title={done.size > 0 ? "All done for now!" : "No recommendations"}
+            title={doneIds.length > 0 ? "All done for now!" : "No recommendations"}
             description={
-              done.size > 0
-                ? `You've completed all ${done.size} recommendation${done.size > 1 ? "s" : ""}. Claude AI will generate new insights after your next data refresh.`
+              doneIds.length > 0
+                ? `You've completed all ${doneIds.length} recommendation${doneIds.length > 1 ? "s" : ""}. Claude AI will generate new insights after your next data refresh.`
                 : "No recommendations match this filter. Try selecting a different priority level."
             }
             action={
-              done.size > 0 ? (
+              doneIds.length > 0 ? (
                 <button
-                  onClick={() => setDone(new Set())}
+                  onClick={() => setDoneIds([])}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-[#1a2d42] text-xs font-semibold text-[#415a72] hover:border-[#243d56] hover:text-[#8ca4be] transition-all"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
@@ -213,10 +208,10 @@ export default function RecommendationsPage() {
         )}
 
         {/* Completed section */}
-        {done.size > 0 && filtered.length > 0 && (
+        {doneIds.length > 0 && filtered.length > 0 && (
           <div className="pt-2">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#2a3f55] mb-3 px-1">
-              Completed ({done.size})
+              Completed ({doneIds.length})
             </p>
             <div className="space-y-2">
               {recommendations
