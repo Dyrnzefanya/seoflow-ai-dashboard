@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { formatNumber } from "@/lib/format-number";
 import { Topbar } from "@/components/layout/topbar";
 import { DashboardShell, GridCols4 } from "@/components/layout/dashboard-shell";
 import { KpiCard } from "@/components/ui/kpi-card";
@@ -369,7 +370,7 @@ export default function KeywordsPage() {
                         )}
                       </td>
                       <td className="py-3 px-2 text-right text-[#415a72] tabular-nums hidden sm:table-cell">
-                        {row.volume > 0 ? row.volume.toLocaleString() : "—"}
+                        {row.volume > 0 ? formatNumber(row.volume) : "—"}
                       </td>
                       <td className="py-3 px-2 hidden md:table-cell">
                         {row.difficulty > 0 ? <DifficultyBar value={row.difficulty} /> : <span className="text-[11px] text-[#2a3f55]">—</span>}

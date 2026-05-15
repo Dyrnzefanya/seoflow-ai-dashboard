@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { weeklyReport } from "@/lib/placeholder-data";
 import { useToast } from "@/components/ui/toast";
+import { formatNumber } from "@/lib/format-number";
 import {
   FileText, Download, Share2, TrendingUp, BarChart2, Globe,
   Search, Sparkles, Loader2, Plus, Eye,
@@ -117,7 +118,7 @@ export default function ReportsPage() {
         <GridCols4>
           <KpiCard
             title="Organic Traffic"
-            value={weeklyReport.organicTraffic.value.toLocaleString()}
+            value={formatNumber(weeklyReport.organicTraffic.value)}
             change={weeklyReport.organicTraffic.change}
             changeLabel="vs prev week"
             icon={<TrendingUp className="h-4.5 w-4.5" />}

@@ -5,6 +5,7 @@ import {
   Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
 import { trafficData } from "@/lib/placeholder-data";
+import { formatNumber } from "@/lib/format-number";
 
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
@@ -18,12 +19,12 @@ function CustomTooltip({ active, payload, label }: any) {
             <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background: p.color }} />
             {p.dataKey}
           </span>
-          <span className="font-bold text-[#f0f4f8] tabular-nums">{p.value.toLocaleString()}</span>
+          <span className="font-bold text-[#f0f4f8] tabular-nums">{formatNumber(p.value)}</span>
         </div>
       ))}
       <div className="mt-2.5 pt-2.5 border-t border-[#1a2d42] flex items-center justify-between">
         <span className="text-[#415a72]">Total</span>
-        <span className="font-bold text-[#f0f4f8] tabular-nums">{total.toLocaleString()}</span>
+        <span className="font-bold text-[#f0f4f8] tabular-nums">{formatNumber(total)}</span>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import {
 import { useModal } from "@/components/providers/modal-context";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/format-number";
 
 type ProjectStatus = "active" | "archived";
 
@@ -127,7 +128,7 @@ function ProjectRow({
         <div className="flex items-center justify-between mb-1.5">
           <span className="text-[10px] text-[#2a3f55]">Keywords tracked</span>
           <span className="text-[10px] font-semibold text-[#415a72]">
-            {project.keywords.toLocaleString()} / {project.keywordLimit.toLocaleString()}
+            {formatNumber(project.keywords)} / {formatNumber(project.keywordLimit)}
           </span>
         </div>
         <div className="h-1 rounded-full bg-[#1a2d42] overflow-hidden">

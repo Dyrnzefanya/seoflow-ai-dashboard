@@ -5,6 +5,7 @@ import { Topbar } from "@/components/layout/topbar";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { useToast } from "@/components/ui/toast";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { formatNumber } from "@/lib/format-number";
 import { StickyNote, Users, PenLine, Plus, X, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -206,7 +207,7 @@ export default function NotesPage() {
     <>
       <Topbar
         title="Notes"
-        subtitle={`acme-corp.com · ${totalWords.toLocaleString()} words across all sections`}
+        subtitle={`acme-corp.com · ${formatNumber(totalWords)} words across all sections`}
       />
       <DashboardShell>
 

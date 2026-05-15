@@ -1,6 +1,7 @@
 import { keywordData } from "@/lib/placeholder-data";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/format-number";
 
 function PositionBadge({ pos }: { pos: number }) {
   const color =
@@ -68,7 +69,7 @@ export function KeywordTable({ limit = 6 }: { limit?: number }) {
                 </span>
               </td>
               <td className="py-3 px-2 text-right text-[#415a72] tabular-nums hidden sm:table-cell">
-                {row.volume.toLocaleString()}
+                {formatNumber(row.volume)}
               </td>
               <td className="py-3 pl-2 hidden md:table-cell">
                 <DifficultyBar value={row.difficulty} />

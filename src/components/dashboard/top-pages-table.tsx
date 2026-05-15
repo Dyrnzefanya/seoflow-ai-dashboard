@@ -1,4 +1,5 @@
 import { topPages } from "@/lib/placeholder-data";
+import { formatNumber } from "@/lib/format-number";
 
 export function TopPagesTable() {
   return (
@@ -25,10 +26,10 @@ export function TopPagesTable() {
                 </div>
               </td>
               <td className="py-3 px-2 text-right font-bold text-[#f0f4f8] tabular-nums">
-                {row.clicks.toLocaleString()}
+                {formatNumber(row.clicks)}
               </td>
               <td className="py-3 px-2 text-right text-[#415a72] tabular-nums hidden sm:table-cell">
-                {row.impressions.toLocaleString()}
+                {formatNumber(row.impressions)}
               </td>
               <td className="py-3 px-2 text-right">
                 <span className="font-semibold text-emerald-400">{row.ctr}</span>

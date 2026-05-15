@@ -130,13 +130,12 @@ export default function ContentPage() {
   };
 
   const advanceStatus = (id: string) => {
-    setIdeas((prev) => prev.map((idea) => {
-      if (idea.id !== id) return idea;
-      const next = STATUS_CONFIG[idea.status].next;
-      if (!next) return idea;
-      toast(`"${idea.title.slice(0, 40)}…" moved to ${STATUS_CONFIG[next].label}.`);
-      return { ...idea, status: next };
-    }));
+    const idea = ideas.find((i) => i.id === id);
+    if (!idea) return;
+    const next = STATUS_CONFIG[idea.status].next;
+    if (!next) return;
+    setIdeas((prev) => prev.map((i) => i.id === id ? { ...i, status: next } : i));
+    toast(`"${idea.title.slice(0, 40)}…" moved to ${STATUS_CONFIG[next].label}.`);
   };
 
   const removeIdea = (id: string, title: string) => {
