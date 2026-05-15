@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import {
   LayoutDashboard, TrendingUp, Cpu, Lightbulb,
-  Search, FileText, Workflow, Settings, Zap, ChevronDown, X, Plus,
+  Search, FileText, Workflow, Settings, Zap, ChevronDown, X, Plus, Layers,
+  PenLine, StickyNote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMobileNav } from "./mobile-nav-context";
@@ -17,8 +18,10 @@ const navItems = [
   { href: "/ai-visibility",   label: "AI Visibility",   icon: Cpu,             badge: null },
   { href: "/recommendations", label: "Recommendations", icon: Lightbulb,       badge: "8" },
   { href: "/keywords",        label: "Keywords",        icon: Search,          badge: null },
+  { href: "/content",         label: "Content Ideas",   icon: PenLine,         badge: null },
   { href: "/reports",         label: "Reports",         icon: FileText,        badge: null },
   { href: "/workflow",        label: "Workflow",        icon: Workflow,        badge: "3" },
+  { href: "/notes",           label: "Notes",           icon: StickyNote,      badge: null },
 ];
 
 const projects = [
@@ -44,7 +47,7 @@ const projects = [
 
 function NavContent({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname();
-  const { openAddProject } = useModal();
+  const { openAddProject, openManageProjects } = useModal();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [activeProject, setActiveProject] = useState(projects[0]);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -141,6 +144,15 @@ function NavContent({ onLinkClick }: { onLinkClick?: () => void }) {
               </button>
             ))}
             <div className="border-t border-[#1a2d42]">
+              <button
+                onClick={() => { setDropdownOpen(false); openManageProjects(); }}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-[#0f1929] transition-colors text-left"
+              >
+                <div className="h-6 w-6 rounded-md border border-[#1a2d42] shrink-0 flex items-center justify-center">
+                  <Layers className="h-3.5 w-3.5 text-[#415a72]" />
+                </div>
+                <span className="text-xs font-semibold text-[#415a72]">Manage projects</span>
+              </button>
               <button
                 onClick={() => { setDropdownOpen(false); openAddProject(); }}
                 className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-[#0f1929] transition-colors text-left"

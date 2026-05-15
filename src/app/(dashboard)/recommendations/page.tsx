@@ -9,7 +9,7 @@ import { recommendations } from "@/lib/placeholder-data";
 import { useToast } from "@/components/ui/toast";
 import {
   AlertCircle, AlertTriangle, Info, ArrowRight, Zap,
-  CheckCircle2, Lightbulb, RotateCcw,
+  CheckCircle2, Lightbulb, RotateCcw, ListTodo,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -176,6 +176,13 @@ export default function RecommendationsPage() {
                       className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-[#2a3f55] hover:text-emerald-400 hover:bg-emerald-500/10 transition-all duration-150"
                     >
                       <CheckCircle2 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toast(`"${rec.title.slice(0, 40)}…" added to Workflow.`); }}
+                      title="Add to Workflow"
+                      className="opacity-0 group-hover:opacity-100 p-1 rounded-lg text-[#2a3f55] hover:text-blue-400 hover:bg-blue-500/10 transition-all duration-150"
+                    >
+                      <ListTodo className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
