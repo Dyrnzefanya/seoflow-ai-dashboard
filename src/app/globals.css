@@ -72,6 +72,18 @@ body {
 .animate-slide-left  { animation: slideInLeft 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
 .animate-pulse-glow  { animation: pulseGlow 2s ease-in-out infinite; }
 
+/* Shimmer skeleton */
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    #1a2d42 0%,
+    #243d56 40%,
+    #1a2d42 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite linear;
+}
+
 /* Dot grid texture for hero backgrounds */
 .dot-grid {
   background-image: radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px);

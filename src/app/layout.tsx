@@ -13,8 +13,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SEOFlow AI Dashboard",
-  description: "Modern SEO, GEO, and AI visibility monitoring platform",
+  title: {
+    default: "SEOFlow — AI Search Visibility Platform",
+    template: "%s · SEOFlow",
+  },
+  description:
+    "Track your brand's visibility across Google, ChatGPT, Perplexity, and Gemini. Get daily AI-powered recommendations that actually move the needle.",
+  keywords: ["SEO dashboard", "AI visibility", "GEO optimization", "AEO", "search analytics", "ChatGPT SEO"],
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+  },
+  openGraph: {
+    title: "SEOFlow — AI Search Visibility Platform",
+    description: "Monitor SEO, track AI visibility across 5 platforms, and get daily recommendations powered by Claude AI.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

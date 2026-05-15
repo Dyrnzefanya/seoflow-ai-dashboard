@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 import {
   LayoutDashboard, TrendingUp, Cpu, Lightbulb,
-  Search, FileText, Workflow, Settings, Zap, ChevronDown, X,
+  Search, FileText, Workflow, Settings, Zap, ChevronDown, X, Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMobileNav } from "./mobile-nav-context";
+import { useModal } from "@/components/providers/modal-context";
 
 const navItems = [
   { href: "/dashboard",       label: "Overview",        icon: LayoutDashboard, badge: null },
@@ -19,8 +21,43 @@ const navItems = [
   { href: "/workflow",        label: "Workflow",        icon: Workflow,        badge: "3" },
 ];
 
+const projects = [
+  {
+    abbr: "AC",
+    name: "acme-corp.com",
+    plan: "Pro Plan · 847 keywords",
+    active: true,
+    gradient: "from-blue-500/30 to-blue-600/20",
+    border: "border-blue-500/30",
+    text: "text-blue-400",
+  },
+  {
+    abbr: "MY",
+    name: "myshop.io",
+    plan: "Starter · 234 keywords",
+    active: false,
+    gradient: "from-purple-500/30 to-purple-600/20",
+    border: "border-purple-500/30",
+    text: "text-purple-400",
+  },
+];
+
 function NavContent({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname();
+  const { openAddProject } = useModal();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [activeProject, setActiveProject] = useState(projects[0]);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownOpen]);
 
   return (
     <>
@@ -36,17 +73,86 @@ function NavContent({ onLinkClick }: { onLinkClick?: () => void }) {
       </div>
 
       {/* Project selector */}
-      <div className="px-3 py-3 border-b border-[#1a2d42]">
-        <button className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-[#0c1322] transition-colors group text-left">
-          <div className="h-6 w-6 rounded-md bg-gradient-to-br from-blue-500/30 to-blue-600/20 border border-blue-500/30 shrink-0 flex items-center justify-center">
-            <span className="text-[9px] font-bold text-blue-400">AC</span>
+      <div className="px-3 py-3 border-b border-[#1a2d42] relative" ref={dropdownRef}>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setDropdownOpen((prev) => !prev)}
+            className="flex-1 flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-[#0c1322] transition-colors group text-left min-w-0"
+          >
+            <div
+              className={cn(
+                "h-6 w-6 rounded-md bg-gradient-to-br border shrink-0 flex items-center justify-center",
+                activeProject.gradient,
+                activeProject.border
+              )}
+            >
+              <span className={cn("text-[9px] font-bold", activeProject.text)}>
+                {activeProject.abbr}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-[#f0f4f8] truncate">{activeProject.name}</p>
+              <p className="text-[10px] text-[#415a72]">{activeProject.plan}</p>
+            </div>
+            <ChevronDown
+              className={cn(
+                "h-3.5 w-3.5 text-[#415a72] shrink-0 transition-transform duration-200",
+                dropdownOpen && "rotate-180"
+              )}
+            />
+          </button>
+
+          <button
+            onClick={() => { setDropdownOpen(false); openAddProject(); }}
+            title="Add new project"
+            className="p-1.5 rounded-lg text-[#415a72] hover:text-emerald-400 hover:bg-[#0c1322] transition-colors shrink-0"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Dropdown */}
+        {dropdownOpen && (
+          <div className="absolute top-full left-3 right-3 z-50 mt-1 rounded-xl border border-[#1a2d42] bg-[#0c1322] shadow-[0_8px_32px_rgba(0,0,0,0.5)] overflow-hidden">
+            <p className="px-3 pt-2.5 pb-1.5 text-[9px] font-bold uppercase tracking-widest text-[#2a3f55]">
+              Your projects
+            </p>
+            {projects.map((proj) => (
+              <button
+                key={proj.name}
+                onClick={() => { setActiveProject(proj); setDropdownOpen(false); }}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-[#0f1929] transition-colors text-left"
+              >
+                <div
+                  className={cn(
+                    "h-6 w-6 rounded-md bg-gradient-to-br border shrink-0 flex items-center justify-center",
+                    proj.gradient, proj.border
+                  )}
+                >
+                  <span className={cn("text-[9px] font-bold", proj.text)}>{proj.abbr}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-[#f0f4f8] truncate">{proj.name}</p>
+                  <p className="text-[10px] text-[#415a72]">{proj.plan}</p>
+                </div>
+                {activeProject.name === proj.name && (
+                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
+                )}
+              </button>
+            ))}
+            <div className="border-t border-[#1a2d42]">
+              <button
+                onClick={() => { setDropdownOpen(false); openAddProject(); }}
+                className="w-full flex items-center gap-2.5 px-3 py-2.5 hover:bg-[#0f1929] transition-colors text-left"
+              >
+                <div className="h-6 w-6 rounded-md border border-dashed border-emerald-500/30 shrink-0 flex items-center justify-center">
+                  <Plus className="h-3.5 w-3.5 text-emerald-400" />
+                </div>
+                <span className="text-xs font-semibold text-emerald-400">Add new project</span>
+              </button>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-[#f0f4f8] truncate">acme-corp.com</p>
-            <p className="text-[10px] text-[#415a72]">Pro Plan · 847 keywords</p>
-          </div>
-          <ChevronDown className="h-3.5 w-3.5 text-[#415a72] shrink-0 group-hover:text-[#8ca4be] transition-colors" />
-        </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -68,7 +174,12 @@ function NavContent({ onLinkClick }: { onLinkClick?: () => void }) {
                   : "text-[#415a72] hover:text-[#8ca4be] hover:bg-[#0c1322] border border-transparent"
               )}
             >
-              <Icon className={cn("h-4 w-4 shrink-0 transition-colors", active ? "text-emerald-400" : "text-[#415a72] group-hover:text-[#8ca4be]")} />
+              <Icon
+                className={cn(
+                  "h-4 w-4 shrink-0 transition-colors",
+                  active ? "text-emerald-400" : "text-[#415a72] group-hover:text-[#8ca4be]"
+                )}
+              />
               <span className="flex-1">{label}</span>
               {badge && !active && (
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 leading-none">
@@ -122,15 +233,12 @@ export function Sidebar() {
       {/* Mobile drawer */}
       {isOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={close}
             aria-hidden
           />
-          {/* Drawer */}
           <aside className="animate-slide-left absolute left-0 top-0 bottom-0 w-72 bg-[#070c18] border-r border-[#1a2d42] flex flex-col shadow-2xl">
-            {/* Close button */}
             <button
               onClick={close}
               className="absolute top-4 right-4 z-10 p-1.5 rounded-lg text-[#415a72] hover:text-[#8ca4be] hover:bg-[#0c1322] transition-colors"
